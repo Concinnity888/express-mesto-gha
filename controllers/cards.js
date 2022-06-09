@@ -21,6 +21,7 @@ const createCard = async (req, res) => {
       res.status(400).send({
         message: 'Переданы некорректные данные при создании карточки',
       });
+      return;
     }
     res.status(500).send({
       message: err.message,
@@ -31,12 +32,19 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndRemove(req.params.cardId);
-    res.status(200).send(card);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!card) {
       res.status(404).send({
         message: 'Карточка с указанным _id не найдена',
       });
+      return;
+    }
+    res.status(200).send(card);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      res.status(400).send({
+        message: 'Переданы некорректные данные при удалении карточки',
+      });
+      return;
     }
     res.status(500).send({
       message: err.message,
@@ -51,17 +59,19 @@ const likeCard = async (req, res) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     );
-    res.status(200).send(card);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!card) {
       res.status(404).send({
         message: 'Передан несуществующий _id карточки',
       });
+      return;
     }
-    if (err.name === 'ValidationError') {
+    res.status(200).send(card);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
       res.status(400).send({
         message: 'Переданы некорректные данные для постановки/снятии лайка',
       });
+      return;
     }
     res.status(500).send({
       message: err.message,
@@ -76,17 +86,19 @@ const dislikeCard = async (req, res) => {
       { $pull: { likes: req.user._id } },
       { new: true },
     );
-    res.status(200).send(card);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!card) {
       res.status(404).send({
         message: 'Передан несуществующий _id карточки',
       });
+      return;
     }
-    if (err.name === 'ValidationError') {
+    res.status(200).send(card);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
       res.status(400).send({
         message: 'Переданы некорректные данные для постановки/снятии лайка',
       });
+      return;
     }
     res.status(500).send({
       message: err.message,

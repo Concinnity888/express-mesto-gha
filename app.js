@@ -14,15 +14,20 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.json());
 app.use(routes);
 
 async function main() {
-  await mongoose.connect('mongodb://localhost:27017/mestodb', {
-    useNewUrlParser: true,
-    useUnifiedTopology: false,
-  });
+  try {
+    await mongoose.connect('mongodb://localhost:27017/mestodb', {
+      useNewUrlParser: true,
+      useUnifiedTopology: false,
+    });
 
-  app.listen(PORT);
+    app.listen(PORT);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 main();

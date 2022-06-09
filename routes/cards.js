@@ -13,7 +13,7 @@ cardsRoutes.get('/', getCards);
 
 cardsRoutes.delete('/:cardId', deleteCard);
 
-cardsRoutes.post('/', express.json(), createCard);
+cardsRoutes.post('/', createCard);
 
 cardsRoutes.put('/:cardId/likes', likeCard);
 

@@ -14,12 +14,19 @@ const getUsers = async (req, res) => {
 const getUserByID = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    res.status(200).send(user);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!user) {
       res.status(404).send({
         message: 'Пользователь по указанному _id не найден',
       });
+      return;
+    }
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      res.status(400).send({
+        message: 'Переданы некорректные данные',
+      });
+      return;
     }
     res.status(500).send({
       message: err.message,
@@ -37,6 +44,7 @@ const createUser = async (req, res) => {
       res.status(400).send({
         message: 'Переданы некорректные данные при создании пользователя',
       });
+      return;
     }
     res.status(500).send({
       message: err.message,
@@ -52,17 +60,19 @@ const updateUser = async (req, res) => {
       { name, about },
       { new: true, runValidators: true },
     );
-    res.status(200).send(user);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!user) {
       res.status(404).send({
         message: 'Пользователь с указанным _id не найден',
       });
+      return;
     }
-    if (err.name === 'ValidationError') {
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
       res.status(400).send({
         message: 'Переданы некорректные данные при обновлении профиля',
       });
+      return;
     }
     res.status(500).send({
       message: err.message,
@@ -78,17 +88,19 @@ const updateUserAvatar = async (req, res) => {
       { avatar },
       { new: true, runValidators: true },
     );
-    res.status(200).send(user);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!user) {
       res.status(404).send({
         message: 'Пользователь с указанным _id не найден',
       });
+      return;
     }
-    if (err.name === 'ValidationError') {
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
       res.status(400).send({
         message: 'Переданы некорректные данные при обновлении аватара',
       });
+      return;
     }
     res.status(500).send({
       message: err.message,
