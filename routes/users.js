@@ -2,7 +2,7 @@ const express = require('express');
 const {
   getUsers,
   getUserByID,
-  createUser,
+  getUser,
   updateUser,
   updateUserAvatar,
 } = require('../controllers/users');
@@ -13,7 +13,7 @@ usersRoutes.get('/', getUsers);
 
 usersRoutes.get('/:id', getUserByID);
 
-usersRoutes.post('/', createUser);
+usersRoutes.get('/me', getUser);
 
 usersRoutes.patch('/me', updateUser);
 

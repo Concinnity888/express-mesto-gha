@@ -34,11 +34,20 @@ const deleteCard = async (req, res) => {
     const card = await Card.findByIdAndRemove(req.params.cardId);
     if (!card) {
       res.status(404).send({
-        message: 'Карточка с указанным _id не найдена',
+        message: 'Карточка с указанным _id не найдена',
       });
       return;
     }
-    res.status(200).send(card);
+
+    const cardOwner = card.owner;
+    if (req.user._id === cardOwner) {
+      res.status(200).send(card);
+    } else {
+      res.status(401).send({
+        message: 'Нет доступа',
+      });
+      return;
+    }
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(400).send({
@@ -61,7 +70,7 @@ const likeCard = async (req, res) => {
     );
     if (!card) {
       res.status(404).send({
-        message: 'Передан несуществующий _id карточки',
+        message: 'Передан несуществующий _id карточки',
       });
       return;
     }
@@ -88,7 +97,7 @@ const dislikeCard = async (req, res) => {
     );
     if (!card) {
       res.status(404).send({
-        message: 'Передан несуществующий _id карточки',
+        message: 'Передан несуществующий _id карточки',
       });
       return;
     }
