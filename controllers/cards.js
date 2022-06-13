@@ -16,7 +16,7 @@ const getCards = async (req, res, next) => {
 const createCard = async (req, res, next) => {
   try {
     const { name, link } = req.body;
-    const card = new Card({ name, link, owner: req.user._id });
+    const card = new Card({ name, link, owner: req.user.id });
     res.status(201).send(await card.save());
   } catch (err) {
     if (err.name === 'ValidationError') {
