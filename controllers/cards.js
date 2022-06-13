@@ -31,7 +31,7 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.cardId);
+    const card = await Card.findById(req.params.cardId);
     if (!card) {
       res.status(404).send({
         message: 'Карточка с указанным _id не найдена',
@@ -39,8 +39,15 @@ const deleteCard = async (req, res) => {
       return;
     }
 
-    const cardOwner = card.owner;
+    const cardOwner = card.owner.toString().replace('new ObjectId("', '');
     if (req.user._id === cardOwner) {
+      const currentCard = await Card.findByIdAndRemove(req.params.cardId);
+      if (!currentCard) {
+        res.status(404).send({
+          message: 'Карточка с указанным _id не найдена',
+        });
+        return;
+      }
       res.status(200).send(card);
     } else {
       res.status(401).send({

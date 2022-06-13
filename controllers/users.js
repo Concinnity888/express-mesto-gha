@@ -9,9 +9,16 @@ const SAULT_ROUNDS = 10;
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    const user = await User.findUserByCredentials(email, password);
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
+      res.status(400).send({
+        message: 'Неправильные логин или пароль',
+      });
+      return;
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
       res.status(400).send({
         message: 'Неправильные логин или пароль',
       });
