@@ -10,6 +10,7 @@ const {
 } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
+const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
 
@@ -34,6 +35,10 @@ app.post('/signin', celebrate({
 app.use(auth);
 
 app.use(routes);
+
+app.use((req, res, next) => {
+  next(new NotFoundError('Маршрут не найден'));
+});
 
 app.use(errors());
 app.use(errorHandler);
