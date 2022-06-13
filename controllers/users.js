@@ -35,7 +35,7 @@ const login = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const user = await User.findOne({ _id: userId });
 
     if (!user) {
@@ -120,7 +120,7 @@ const updateUser = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     const user = await User.findByIdAndUpdate(
-      req.user._id,
+      req.user.id,
       { name, about },
       { new: true, runValidators: true },
     );
@@ -143,7 +143,7 @@ const updateUserAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const user = await User.findByIdAndUpdate(
-      req.user._id,
+      req.user.id,
       { avatar },
       { new: true, runValidators: true },
     );

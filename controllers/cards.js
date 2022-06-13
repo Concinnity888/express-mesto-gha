@@ -34,7 +34,7 @@ const deleteCard = async (req, res, next) => {
     }
 
     const cardOwner = card.owner.toString().replace('new ObjectId("', '');
-    if (req.user._id === cardOwner) {
+    if (req.user.id === cardOwner) {
       const currentCard = await Card.findByIdAndRemove(req.params.cardId);
       res.status(200).send(currentCard);
     } else {
@@ -52,7 +52,7 @@ const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
+      { $addToSet: { likes: req.user.id } },
       { new: true },
     );
     if (!card) {
@@ -72,7 +72,7 @@ const dislikeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: req.user._id } },
+      { $pull: { likes: req.user.id } },
       { new: true },
     );
     if (!card) {
