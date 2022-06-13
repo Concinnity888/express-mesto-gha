@@ -14,18 +14,18 @@ usersRoutes.get('/', getUsers);
 
 usersRoutes.get('/me', getUser);
 
-usersRoutes.get('/:id', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().length(24).hex().required(),
-  }),
-}), getUserById);
-
 usersRoutes.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
   }),
 }), updateUser);
+
+usersRoutes.get('/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().length(24).hex().required(),
+  }),
+}), getUserById);
 
 usersRoutes.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
