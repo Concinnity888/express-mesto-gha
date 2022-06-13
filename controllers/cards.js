@@ -50,15 +50,16 @@ const deleteCard = async (req, res, next) => {
 
 const likeCard = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndUpdate(
+    const card = await Card.findById(req.params.cardId);
+    if (!card) {
+      next(new NotFoundError('Карточка с указанным _id не найдена'));
+    }
+    const currentCard = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user.id } },
       { new: true },
     );
-    if (!card) {
-      next(new NotFoundError('Передан несуществующий _id карточки'));
-    }
-    res.status(200).send(card);
+    res.status(200).send(currentCard);
   } catch (err) {
     if (err.kind === 'ObjectId') {
       next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
@@ -70,15 +71,16 @@ const likeCard = async (req, res, next) => {
 
 const dislikeCard = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndUpdate(
+    const card = await Card.findById(req.params.cardId);
+    if (!card) {
+      next(new NotFoundError('Карточка с указанным _id не найдена'));
+    }
+    const currentCard = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user.id } },
       { new: true },
     );
-    if (!card) {
-      next(new NotFoundError('Передан несуществующий _id карточки'));
-    }
-    res.status(200).send(card);
+    res.status(200).send(currentCard);
   } catch (err) {
     if (err.kind === 'ObjectId') {
       next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
