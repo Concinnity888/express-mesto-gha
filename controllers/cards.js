@@ -20,7 +20,7 @@ const createCard = async (req, res, next) => {
     res.status(201).send(await card.save());
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные при создании карточки'));
+      return next(new ValidationError('Переданы некорректные данные при создании карточки'));
     }
     next(err);
   }
@@ -30,7 +30,7 @@ const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
     if (!card) {
-      next(new NotFoundError('Карточка с указанным _id не найдена'));
+      return next(new NotFoundError('Карточка с указанным _id не найдена'));
     }
 
     const cardOwner = card.owner.toString().replace('new ObjectId("', '');
@@ -38,11 +38,11 @@ const deleteCard = async (req, res, next) => {
       const currentCard = await Card.findByIdAndRemove(req.params.cardId);
       res.status(200).send(currentCard);
     } else {
-      next(new ForbiddenError('Нет доступа'));
+      return next(new ForbiddenError('Нет доступа'));
     }
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные при удалении карточки'));
+      return next(new BadRequestError('Переданы некорректные данные при удалении карточки'));
     }
     next(err);
   }
@@ -52,7 +52,7 @@ const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
     if (!card) {
-      next(new NotFoundError('Карточка с указанным _id не найдена'));
+      return next(new NotFoundError('Карточка с указанным _id не найдена'));
     }
     const currentCard = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -62,7 +62,7 @@ const likeCard = async (req, res, next) => {
     res.status(200).send(currentCard);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+      return next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
       return;
     }
     next(err);
@@ -73,7 +73,7 @@ const dislikeCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
     if (!card) {
-      next(new NotFoundError('Карточка с указанным _id не найдена'));
+      return next(new NotFoundError('Карточка с указанным _id не найдена'));
     }
     const currentCard = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -83,7 +83,7 @@ const dislikeCard = async (req, res, next) => {
     res.status(200).send(currentCard);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+      return next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
     }
     next(err);
   }

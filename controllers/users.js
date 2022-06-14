@@ -16,12 +16,12 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      next(new UnauthorizedError('Неправильные логин или пароль'));
+      return next(new UnauthorizedError('Неправильные логин или пароль'));
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      next(new UnauthorizedError('Неправильные логин или пароль'));
+      return next(new UnauthorizedError('Неправильные логин или пароль'));
     }
 
     const token = await getToken(user._id);
@@ -39,15 +39,15 @@ const getUser = async (req, res, next) => {
     const user = await User.findOne({ _id: userId });
 
     if (!user) {
-      next(new NotFoundError('Пользователь по указанному _id не найден'));
+      return next(new NotFoundError('Пользователь по указанному _id не найден'));
     }
     res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные'));
+      return next(new BadRequestError('Переданы некорректные данные'));
     }
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные'));
+      return next(new ValidationError('Переданы некорректные данные'));
     }
     next(err);
   }
@@ -66,12 +66,12 @@ const getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
-      next(new NotFoundError('Пользователь по указанному _id не найден'));
+      return next(new NotFoundError('Пользователь по указанному _id не найден'));
     }
     res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные'));
+      return next(new BadRequestError('Переданы некорректные данные'));
     }
     next(err);
   }
@@ -87,7 +87,7 @@ const createUser = async (req, res, next) => {
   } = req.body;
 
   if (!email || !password) {
-    next(new BadRequestError('Неправильные логин или пароль'));
+    return next(new BadRequestError('Неправильные логин или пароль'));
   }
 
   try {
@@ -107,10 +107,10 @@ const createUser = async (req, res, next) => {
     });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные при создании пользователя'));
+      return next(new ValidationError('Переданы некорректные данные при создании пользователя'));
     }
     if (err.code === DUBLICATE_MONGOOSE_ERROR_CODE) {
-      next(new ConflictError('Пользователь уже существует'));
+      return next(new ConflictError('Пользователь уже существует'));
     }
     next(err);
   }
@@ -125,15 +125,15 @@ const updateUser = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (!user) {
-      next(new NotFoundError('Пользователь с указанным _id не найден'));
+      return next(new NotFoundError('Пользователь с указанным _id не найден'));
     }
     res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+      return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
     }
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
+      return next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
     }
     next(err);
   }
@@ -148,15 +148,15 @@ const updateUserAvatar = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (!user) {
-      next(new NotFoundError('Пользователь по указанному _id не найден'));
+      return next(new NotFoundError('Пользователь по указанному _id не найден'));
     }
     res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
+      return next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
     }
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные при обновлении аватара'));
+      return next(new ValidationError('Переданы некорректные данные при обновлении аватара'));
     }
     next(err);
   }
